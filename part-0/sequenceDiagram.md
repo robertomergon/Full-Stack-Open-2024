@@ -1,5 +1,5 @@
 ```mermaid
-sequenceDiagram
+sequenceDiagram;
     participant browser
     participant server
 
@@ -22,7 +22,7 @@ sequenceDiagram
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
     activate server
-    server-->>browser: [{ "content": "HTML is easy", "date": "2022-9-16" }, ... ]
+    server-->>browser: [{ "content": "Learning Mermaid syntax", "date": "2024-9-16" }, ... ]
     deactivate server
 
     Note right of browser: The browser executes the callback function that renders the notes
