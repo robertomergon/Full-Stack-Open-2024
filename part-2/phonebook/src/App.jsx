@@ -1,20 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import List from './components/List'
 import Form from './components/Form'
 import Filter from './components/Filter'
+import { getAll } from './services/person.services'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
+  const [persons, setPersons] = useState([])
   const [personsFiltered, setPersonsFiltered] = useState(persons)
 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+
+  // When the component is first rendered, the effect hook retrieves the initial list of persons from the server
+  useEffect(() => {
+    getAll()
+      .then(response => {
+        setPersons(response.data)
+        setPersonsFiltered(response.data)
+      })
+  }
+    , [])
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
