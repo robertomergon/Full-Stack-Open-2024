@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import List from './components/List'
 import Form from './components/Form'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import { getAll, create, deleteContact, update } from './services/person.services'
 
 const App = () => {
@@ -11,6 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
   // When the component is first rendered, the effect hook retrieves the initial list of persons from the server
   useEffect(() => {
@@ -45,6 +47,10 @@ const App = () => {
     }
     create(personObject)
       .then(response => {
+        setMessage({ text: `Added ${newName}`, type: 'success' })
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
         setPersons(persons.concat(response.data))
         setPersonsFiltered(persons.concat(response.data))
         setNewName('')
@@ -66,16 +72,25 @@ const App = () => {
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
           setPersonsFiltered(persons.filter(person => person.id !== id))
+        }).catch(error => {
+          console.error(error)
+          setMessage({ text: `Information of ${person.name} has already been removed from the server`, type: 'error' })
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+          setPersons(persons.filter(person => person.id !== id))
+          setPersonsFiltered(persons.filter(person => person.id !== id))
         })
     }
   }
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
       <h3>Search by name</h3>
       <Filter filter={newFilter} onFilter={handleFilter} />
       <h3>Add a new contact</h3>
+      <Notification message={message} />
       <Form handleSubmit={handleSubmit} newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber} />
       <div>
       </div>
