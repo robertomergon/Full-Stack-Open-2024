@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import List from './components/List'
 import Form from './components/Form'
 import Filter from './components/Filter'
-import { getAll } from './services/person.services'
+import { getAll, create, deleteContact, update } from './services/person.services'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -27,32 +27,29 @@ const App = () => {
     e.preventDefault()
     const personObject = {
       name: newName,
-      number: newNumber
+      number: newNumber,
+      id: new String(persons.length + 1)
     }
     if (persons.find(person => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
-      setNewName('')
-      return
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const person = persons.find(person => person.name === newName)
+        const updatedPerson = { ...person, number: newNumber }
+        update(person.id, updatedPerson)
+          .then(response => {
+            setPersons(persons.map(person => person.id !== updatedPerson.id ? person : response.data))
+            setPersonsFiltered(persons.map(person => person.id !== updatedPerson.id ? person : response.data))
+          })
+        return
+      }
+      else return
     }
-    if (persons.find(person => person.number === newNumber)) {
-      alert(`${newNumber} is already added to phonebook`)
-      setNewNumber('')
-      return
-    }
-    setPersons(
-      [
-        ...persons,
-        personObject
-      ]
-    )
-    setPersonsFiltered(
-      [
-        ...personsFiltered,
-        personObject
-      ]
-    )
-    setNewName('')
-    setNewNumber('')
+    create(personObject)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        setPersonsFiltered(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleFilter = (e) => {
@@ -60,6 +57,17 @@ const App = () => {
     setNewFilter(filter)
     const filtered = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
     setPersonsFiltered(filtered)
+  }
+
+  const handleDelete = (id) => {
+    const person = persons.find(person => person.id === id)
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      deleteContact(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+          setPersonsFiltered(persons.filter(person => person.id !== id))
+        })
+    }
   }
 
   return (
@@ -72,7 +80,7 @@ const App = () => {
       <div>
       </div>
       <h2>Numbers</h2>
-      <List contacts={personsFiltered} />
+      <List contacts={personsFiltered} deleteContact={handleDelete} />
     </div>
   )
 }
