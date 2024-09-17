@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node index.js",
     "build": "echo 'No build step required'",
+    "build:ui": "rimraf ../../part-2/phonebook/build && cd ../../part-2/phonebook && npm run build && powershell -Command \"Move-Item -Path '../../part-2/phonebook/dist' -Destination '../../part-3/persons' -Force\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js"
   },
@@ -16,5 +17,10 @@
     "express": "^4.21.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.4"
+  },
+  "devDependencies": {
+    "mv": "^2.1.1",
+    "mv-cli": "^0.0.1",
+    "rimraf": "^6.0.1"
   }
 }
