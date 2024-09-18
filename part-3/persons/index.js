@@ -1,6 +1,11 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const mongoose = require('mongoose');
+
+const db_password = process.argv[2];
+
+const mongoUri = `mongodb+srv://robertomergon:${db_password}@cluster0.oxxeh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 
 const app = express();
 
@@ -93,6 +98,18 @@ app.post('/api/persons', (req, res) => {
     persons = persons.concat(person);
     res.json(person);
 });
+
+mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+    .then(() => {
+        console.log('Connected to MongoDB');
+    })
+    .catch((error) => {
+        console.log('Error connecting to MongoDB:', error.message);
+    });
+
 
 const PORT = 3001;
 app.listen(PORT, () => {
