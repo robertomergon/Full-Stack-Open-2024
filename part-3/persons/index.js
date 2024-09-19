@@ -54,11 +54,11 @@ app.get('/api/persons/:id', (req, res) => {
 // Delete a person by id
 app.delete('/api/persons/:id', (req, res) => {
     const id = req.params.id;
-    Person.findByIdAndRemove(id).then(() => {
+    Person.deleteOne({ _id: id }).then(() => {
         res.status(204).end();
     }).catch(error => {
         console.log('Error deleting person:', error);
-        res.status(400).end();
+        res.status(500).end();
     });
 });
 
