@@ -54,8 +54,12 @@ app.get('/api/persons/:id', (req, res) => {
 // Delete a person by id
 app.delete('/api/persons/:id', (req, res) => {
     const id = req.params.id;
-    persons = persons.filter(person => person.id !== id);
-    res.status(204).end();
+    Person.findByIdAndRemove(id).then(() => {
+        res.status(204).end();
+    }).catch(error => {
+        console.log('Error deleting person:', error);
+        res.status(400).end();
+    });
 });
 
 // Add a new person to the phonebook

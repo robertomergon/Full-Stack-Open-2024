@@ -18,8 +18,12 @@ const App = () => {
   useEffect(() => {
     getAll()
       .then(response => {
-        setPersons(response.data)
-        setPersonsFiltered(response.data)
+        setPersons(response.data.map(person => {
+          return { ...person, id: person._id }
+        }))
+        setPersonsFiltered(response.data.map(person => {
+          return { ...person, id: person._id }
+        }))
       })
   }
     , [])
