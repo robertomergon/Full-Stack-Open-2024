@@ -19,8 +19,12 @@ app.get('/', (req, res) => {
 
 // Get the info of the whole phonebook
 app.get('/api/persons', (req, res) => {
+    console.log('Getting persons...');
     Person.find({}).then(persons => {
         res.json(persons);
+    }).catch(error => {
+        console.log('Error getting persons:', error);
+        res.status(500).end();
     });
 });
 
