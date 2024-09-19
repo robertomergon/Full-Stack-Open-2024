@@ -93,12 +93,6 @@ app.post('/api/persons', (req, res, next) => {
         number: body.number
     };
 
-    if (person.name.length < 3 || person.number.length < 8) {
-        return res.status(400).json({
-            error: 'name must be at least 3 characters long and number must be at least 8 characters long'
-        });
-    }
-
     Person.create(person).then(newPerson => {
         res.json(newPerson);
     }).catch(error => {
