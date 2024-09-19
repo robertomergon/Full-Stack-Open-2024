@@ -14,7 +14,6 @@ morgan.token('body', (req, res) => JSON.stringify(req.body));
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 
 const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
 
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
@@ -29,8 +28,6 @@ const errorHandler = (error, request, response, next) => {
 
     next(error)
 }
-
-app.use(errorHandler);
 
 app.get('/', (req, res) => {
     res.send('<h1>Hello World!</h1>');
@@ -119,6 +116,8 @@ app.put('/api/persons/:id', (req, res, next) => {
         next(error);
     });
 });
+
+app.use(errorHandler);
 
 const PORT = 3001;
 app.listen(PORT, () => {
