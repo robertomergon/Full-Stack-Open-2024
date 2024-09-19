@@ -31,7 +31,12 @@ app.get('/api/persons', (req, res) => {
 // Get the info of the length of the phonebook and the current date
 app.get('/info', (req, res) => {
     const date = new Date();
-    res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`);
+    Person.find({}).then(persons => {
+        res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`);
+    }).catch(error => {
+        console.log('Error getting persons:', error);
+        res.status(500).end();
+    });
 });
 
 // Get the info of a single person by id

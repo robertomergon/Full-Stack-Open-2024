@@ -20,6 +20,5 @@ const personSchema = new mongoose.Schema({
     number: String
 });
 
-const Person = mongoose.model('Person', personSchema);
+module.exports = mongoose.model('Person', personSchema);
 
-exports.module = Person;
