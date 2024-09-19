@@ -32,7 +32,7 @@ const personSchema = new mongoose.Schema({
             message: (props) => `${props.value} is shorter than the minimum allowed length (8) or does not match the pattern 123-4567`
         }
     }
-});
+})
 
 module.exports = mongoose.model('Person', personSchema);
 
