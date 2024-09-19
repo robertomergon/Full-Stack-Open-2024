@@ -72,8 +72,14 @@ app.post('/api/persons', (req, res) => {
     }
     Person.find({ name: body.name }).then(persons => {
         if (persons.length > 0) {
-            return res.status(400).json({
-                error: 'name must be unique'
+            // Update the existing person with the new number
+            const person = persons[0];
+            person.number = body.number;
+            Person.findByIdAndUpdate(person._id, person, { new: true }).then(updatedPerson => {
+                res.json(updatedPerson);
+            }).catch(error => {
+                console.log('Error updating person:', error);
+                res.status(500).end();
             });
         }
     });
