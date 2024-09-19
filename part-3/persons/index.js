@@ -14,7 +14,6 @@ morgan.token('body', (req, res) => JSON.stringify(req.body));
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 
 const errorHandler = (error, req, res, next) => {
-    console.error(error.message);
     if (error.name === 'CastError') {
         return res.status(400).send({ error: 'malformatted id' });
     } else if (error.name === 'ValidationError') {
@@ -92,7 +91,6 @@ app.post('/api/persons', (req, res, next) => {
         name: body.name,
         number: body.number
     };
-
     Person.create(person).then(newPerson => {
         res.json(newPerson);
     }).catch(error => {
