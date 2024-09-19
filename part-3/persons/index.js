@@ -94,7 +94,7 @@ app.post('/api/persons', (req, res, next) => {
     Person.create(person).then(newPerson => {
         res.json(newPerson);
     }).catch(error => {
-        console.log("HOLA", error);
+        console.log("HOLA", error.name);
         next(error);
     });
 });
