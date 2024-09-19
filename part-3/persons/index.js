@@ -95,10 +95,10 @@ app.post('/api/persons', (req, res, next) => {
             });
         }
     });
-    const person = {
+    const person = new Person({
         name: body.name,
         number: body.number
-    };
+    });
     person.save().then(savedPerson => {
         res.json(savedPerson);
     }).catch(error => {
