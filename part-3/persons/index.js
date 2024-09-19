@@ -58,11 +58,6 @@ app.delete('/api/persons/:id', (req, res) => {
     res.status(204).end();
 });
 
-function getLastId() {
-    const ids = persons.map(person => person.id);
-    return Math.max(...ids);
-}
-
 // Add a new person to the phonebook
 app.post('/api/persons', (req, res) => {
     const body = req.body;
@@ -77,12 +72,15 @@ app.post('/api/persons', (req, res) => {
         });
     }
     const person = {
-        id: getLastId() + 1,
         name: body.name,
         number: body.number
     };
-    persons = persons.concat(person);
-    res.json(person);
+    Person.create(person).then(newPerson => {
+        res.json(newPerson);
+    }).catch(error => {
+        console.log('Error creating person:', error);
+        res.status(500).end();
+    });
 });
 
 const PORT = 3001;
