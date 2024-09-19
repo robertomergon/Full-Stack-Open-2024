@@ -1,36 +1,10 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-const mongoose = require('mongoose');
 
-const db_password = process.argv[2];
-
-const mongoUri = `mongodb+srv://robertomergon:${db_password}@cluster0.oxxeh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+const Person = require('./mongo');
 
 const app = express();
-
-let persons = [
-    {
-        "id": "1",
-        "name": "Arto Hellas",
-        "number": "040-123456"
-    },
-    {
-        "id": "2",
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523"
-    },
-    {
-        "id": "3",
-        "name": "Dan Abramov",
-        "number": "12-43-234345"
-    },
-    {
-        "id": "4",
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122"
-    }
-]
 
 app.use(cors());
 app.use(express.static('dist'));
@@ -45,7 +19,9 @@ app.get('/', (req, res) => {
 
 // Get the info of the whole phonebook
 app.get('/api/persons', (req, res) => {
-    res.json(persons);
+    Person.find({}).then(persons => {
+        res.json(persons);
+    });
 });
 
 // Get the info of the length of the phonebook and the current date
@@ -57,12 +33,13 @@ app.get('/info', (req, res) => {
 // Get the info of a single person by id
 app.get('/api/persons/:id', (req, res) => {
     const id = req.params.id;
-    const person = persons.find(person => person.id === id);
-    if (person) {
-        res.json(person);
-    } else {
-        res.status(404).send({ message: 'User not Found' });
-    }
+    Person.findById(id).then(person => {
+        if (person) {
+            res.json(person);
+        } else {
+            res.status(404).end();
+        }
+    });
 });
 
 // Delete a person by id
@@ -98,18 +75,6 @@ app.post('/api/persons', (req, res) => {
     persons = persons.concat(person);
     res.json(person);
 });
-
-mongoose.connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-    .then(() => {
-        console.log('Connected to MongoDB');
-    })
-    .catch((error) => {
-        console.log('Error connecting to MongoDB:', error.message);
-    });
-
 
 const PORT = 3001;
 app.listen(PORT, () => {

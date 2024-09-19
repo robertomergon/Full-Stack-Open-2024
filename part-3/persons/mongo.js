@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
-const db_password = process.argv[2];
-const mongoUri = `mongodb+srv://robertomergon:${db_password}@cluster0.oxxeh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+dotenv.config();
 
-const name = process.argv[3];
-const number = process.argv[4];
+const mongoUri = process.env.MONGO_URI;
+
+console.log('mongoUri:', mongoUri);
 
 mongoose.connect(mongoUri, {})
     .then(() => {
@@ -21,27 +22,4 @@ const personSchema = new mongoose.Schema({
 
 const Person = mongoose.model('Person', personSchema);
 
-if (name && number) {
-    const person = new Person({
-        name: name,
-        number: number
-    });
-
-    person.save().then(result => {
-        console.log(`Added ${name} number ${number} to phonebook`);
-        mongoose.connection.close().then(() => {
-            console.log('\nConnection closed\n');
-        });
-    });
-} else {
-    Person.find({}).then(result => {
-        console.log('Phonebook:');
-        result.forEach(person => {
-            console.log(`• ${person.name} ${person.number}`);
-        });
-        mongoose.connection.close().then(() => {
-            console.log('\nConnection closed\n');
-        });
-    });
-}
-
+exports.module = Person;
