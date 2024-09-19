@@ -99,8 +99,8 @@ app.post('/api/persons', (req, res, next) => {
         name: body.name,
         number: body.number
     };
-    Person.create(person).then(newPerson => {
-        res.json(newPerson);
+    person.save().then(savedPerson => {
+        res.json(savedPerson);
     }).catch(error => {
         next(error);
     });
