@@ -72,11 +72,8 @@ app.post('/api/persons', (req, res) => {
     }
     Person.find({ name: body.name }).then(persons => {
         if (persons.length > 0) {
-            // Update the existing person with the new number
-            const person = persons[0];
-            person.number = body.number;
-            Person.findByIdAndUpdate(person._id, person, { new: true }).then(updatedPerson => {
-                res.json(updatedPerson);
+            Person.updateOne({ number: body.number }).then(() => {
+                res.status(204).end();
             }).catch(error => {
                 console.log('Error updating person:', error);
                 res.status(500).end();
@@ -91,6 +88,21 @@ app.post('/api/persons', (req, res) => {
         res.json(newPerson);
     }).catch(error => {
         console.log('Error creating person:', error);
+        res.status(500).end();
+    });
+});
+
+// Update a person's number
+app.put('/api/persons/:id', (req, res) => {
+    const id = req.params.id;
+    const body = req.body;
+    const person = {
+        number: body.number
+    };
+    Person.findByIdAndUpdate(id, person, { new: true }).then(updatedPerson => {
+        res.json(updatedPerson);
+    }).catch(error => {
+        console.log('Error updating person:', error);
         res.status(500).end();
     });
 });
