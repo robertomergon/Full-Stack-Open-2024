@@ -29,7 +29,7 @@ blogRouter.post('/', async (request, response, next) => {
     });
 
     const savedBlog = await blog.save()
-    response.json(savedBlog);
+    response.status(201).json(savedBlog);
 });
 
 blogRouter.delete('/:id', (request, response, next) => {
