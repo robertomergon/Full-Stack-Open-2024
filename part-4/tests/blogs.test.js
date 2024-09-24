@@ -47,6 +47,20 @@ describe('testing the enpoint [GET] /api/blogs', () => {
         assert.strictEqual(response.body.length, initialBlogs.length + 1);
     });
 
+    test('if the likes property is missing, it will default to 0', async () => {
+        const newBlog = {
+            title: 'New blog post',
+            author: 'New author',
+            url: 'http://newblog.com',
+        };
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/);
+    });
+
 });
 
 
