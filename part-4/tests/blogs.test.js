@@ -5,6 +5,8 @@ const app = require('../app');
 const mongoose = require('mongoose');
 const initialBlogs = require('./test_initial_info');
 const Blog = require('../models/blogs');
+const { title } = require('node:process');
+const { url } = require('node:inspector');
 
 const api = supertest(app);
 
@@ -61,6 +63,34 @@ describe('testing the enpoint [GET] /api/blogs', () => {
             .expect('Content-Type', /application\/json/);
     });
 
+    describe('if the title or url properties are missing', () => {
+        test('title is missing, return 400 Bad Request', async () => {
+            const newBlog = {
+                author: 'New author',
+                url: 'http://newblog.com',
+                likes: 0,
+            };
+
+            await api
+                .post('/api/blogs')
+                .send(newBlog)
+                .expect(400);
+        });
+
+        test('url is missing, return 400 Bad Request', async () => {
+            const newBlog = {
+                title: 'New blog post',
+                author: 'New author',
+                likes: 0,
+            };
+
+            await api
+                .post('/api/blogs')
+                .send(newBlog)
+                .expect(400);
+        });
+
+    });
 });
 
 
