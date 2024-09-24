@@ -6,19 +6,16 @@ blogRouter.get('/', async (request, response) => {
     response.json(blogs);
 });
 
-blogRouter.get('/:id', (request, response, next) => {
-    Blog.findById(request.params.id)
-        .then(blog => {
-            if (blog) {
-                response.json(blog);
-            } else {
-                response.status(404).end();
-            }
-        })
-        .catch(error => next(error));
+blogRouter.get('/:id', async (request, response) => {
+    const blog = await Blog.findById(request.params.id)
+    if (blog) {
+        response.json(blog);
+    } else {
+        response.status(404).end();
+    }
 });
 
-blogRouter.post('/', async (request, response, next) => {
+blogRouter.post('/', async (request, response) => {
     const body = request.body;
     if (!body.title || !body.url) {
         return response.status(400).json({ error: 'title or url missing' });
@@ -35,15 +32,16 @@ blogRouter.post('/', async (request, response, next) => {
     response.status(201).json(savedBlog);
 });
 
-blogRouter.delete('/:id', (request, response, next) => {
-    Blog.findByIdAndDelete(request.params.id)
-        .then(() => {
-            response.status(204).end();
-        })
-        .catch(error => next(error));
+blogRouter.delete('/:id', async (request, response) => {
+    const blog = await Blog.findByIdAndDelete(request.params.id)
+    if (blog) {
+        response.status(204).end();
+    } else {
+        response.status(404).end();
+    }
 });
 
-blogRouter.put('/:id', (request, response, next) => {
+blogRouter.put('/:id', async (request, response) => {
     const body = request.body;
 
     const blog = {
@@ -53,11 +51,8 @@ blogRouter.put('/:id', (request, response, next) => {
         likes: body.likes
     };
 
-    Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-        .then(updatedBlog => {
-            response.json(updatedBlog);
-        })
-        .catch(error => next(error));
+    const blogUpdated = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+    response.json(blogUpdated);
 });
 
 module.exports = blogRouter;

@@ -5,8 +5,6 @@ const app = require('../app');
 const mongoose = require('mongoose');
 const initialBlogs = require('./test_initial_info');
 const Blog = require('../models/blogs');
-const { title } = require('node:process');
-const { url } = require('node:inspector');
 
 const api = supertest(app);
 
@@ -31,6 +29,10 @@ describe('testing the enpoint [GET] /api/blogs', () => {
         assert(response.body[0].id);
     });
 
+});
+
+describe('testing the endpoint [POST] /api/blogs', () => {
+
     test('creating a new blog post', async () => {
         const newBlog = {
             title: 'New blog post',
@@ -49,7 +51,7 @@ describe('testing the enpoint [GET] /api/blogs', () => {
         assert.strictEqual(response.body.length, initialBlogs.length + 1);
     });
 
-    test('if the likes property is missing, it will default to 0', async () => {
+    test('if the "likes" property is missing, it will default to 0', async () => {
         const newBlog = {
             title: 'New blog post',
             author: 'New author',
@@ -91,9 +93,41 @@ describe('testing the enpoint [GET] /api/blogs', () => {
         });
 
     });
+
 });
 
+describe('testing the endpoint [DELETE] /api/blogs/:id', () => {
+    test('deleting a blog post', async () => {
+        const response = await api.get('/api/blogs');
+        const blogToDelete = response.body[0];
 
+        await api
+            .delete(`/api/blogs/${blogToDelete.id}`)
+            .expect(204);
+
+        const blogsAtEnd = await api.get('/api/blogs');
+        assert.strictEqual(blogsAtEnd.body.length, initialBlogs.length - 1);
+    });
+});
+
+describe('testing the endpoint [PUT] /api/blogs/:id', () => {
+    test('updating a blog post', async () => {
+        const response = await api.get('/api/blogs');
+        const blogToUpdate = response.body[0];
+        const updatedBlog = {
+            likes: blogToUpdate.likes + 1,
+        };
+
+        await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send(updatedBlog)
+            .expect(200);
+
+        const blogsAtEnd = await api.get('/api/blogs');
+        const updatedBlogAtEnd = blogsAtEnd.body[0];
+        assert.strictEqual(updatedBlogAtEnd.likes, blogToUpdate.likes + 1);
+    });
+});
 
 after(() => {
     mongoose.connection.close();
