@@ -29,7 +29,7 @@ describe('testing the endpoint [POST] /api/users', () => {
             .expect('Content-Type', /application\/json/);
     });
 
-    test('correct error code and message when creating a user with invalid credentials', async () => {
+    test('Error code (400) and message when creating a user with invalid credentials', async () => {
         const newUser = {
             username: 'rob',
             name: 'Superuser',
@@ -41,6 +41,7 @@ describe('testing the endpoint [POST] /api/users', () => {
         assert.strictEqual(response.status, 400);
         assert.strictEqual(response.body.error, 'password missing or too short');
     });
+
 });
 
 describe('testing the endpoint [POST] /api/login', () => {

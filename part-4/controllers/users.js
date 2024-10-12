@@ -19,6 +19,9 @@ usersRouter.post('/', async (request, response) => {
     });
 
     const savedUser = await user.save();
+    if (!savedUser) {
+        return response.status(500).json({ error: 'An error occurred while saving the user' });
+    }
     response.status(201).json(savedUser);
 });
 

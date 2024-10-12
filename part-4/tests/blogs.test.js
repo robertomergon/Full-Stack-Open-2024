@@ -5,6 +5,7 @@ const app = require('../app');
 const mongoose = require('mongoose');
 const initialBlogs = require('./test_initial_info').initialBlogs;
 const Blog = require('../models/blogs');
+const User = require('../models/users');
 
 const api = supertest(app);
 
@@ -32,13 +33,16 @@ describe('testing the enpoint [GET] /api/blogs', () => {
 });
 
 describe('testing the endpoint [POST] /api/blogs', () => {
-
     test('creating a new blog post', async () => {
+        const users = await User.find({});
+        const user = users[0];
+
         const newBlog = {
             title: 'New blog post',
             author: 'New author',
             url: 'http://newblog.com',
             likes: 0,
+            user: user.id,
         };
 
         await api
@@ -52,10 +56,13 @@ describe('testing the endpoint [POST] /api/blogs', () => {
     });
 
     test('if the "likes" property is missing, it will default to 0', async () => {
+        const users = await User.find({});
+        const user = users[0];
         const newBlog = {
             title: 'New blog post',
             author: 'New author',
             url: 'http://newblog.com',
+            user: user.id,
         };
 
         await api
@@ -67,10 +74,13 @@ describe('testing the endpoint [POST] /api/blogs', () => {
 
     describe('if the title or url properties are missing', () => {
         test('title is missing, return 400 Bad Request', async () => {
+            const users = await User.find({});
+            const user = users[0];
             const newBlog = {
                 author: 'New author',
                 url: 'http://newblog.com',
                 likes: 0,
+                user: user.id,
             };
 
             await api
@@ -80,10 +90,13 @@ describe('testing the endpoint [POST] /api/blogs', () => {
         });
 
         test('url is missing, return 400 Bad Request', async () => {
+            const users = await User.find({});
+            const user = users[0];
             const newBlog = {
                 title: 'New blog post',
                 author: 'New author',
                 likes: 0,
+                user: user.id
             };
 
             await api
