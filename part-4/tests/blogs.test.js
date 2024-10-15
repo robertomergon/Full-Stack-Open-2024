@@ -91,9 +91,35 @@ describe('testing the endpoint [POST] /api/blogs', () => {
         });
 
     });
+});
 
+describe('testing the endpoint [DELETE] /api/blogs/:id', () => {
+    test('deleting a blog post', async () => {
+        const blogs = await Blog.find({});
+        const blog = blogs[0];
+
+        await api
+            .delete(`/api/blogs/${blog.id}`)
+            .expect(204);
+
+        const response = await api.get('/api/blogs');
+        assert(response.body.length === listWithMultipleBlogs.length - 1);
+    });
 });
         
+describe('testing the endpoint [PUT] /api/blogs/:id', () => {
+    test('updating the likes of a blog post', async () => {
+        const blogs = await Blog.find({});
+        const blog = blogs[0];
+
+        await api
+            .put(`/api/blogs/${blog.id}`)
+            .expect(200);
+            
+        const response = await api.get('/api/blogs');
+        assert(response.body[0].likes === blog.likes + 1);
+    });
+});
 
 after(() => {
     db.connection.close();

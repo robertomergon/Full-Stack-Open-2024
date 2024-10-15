@@ -25,4 +25,19 @@ blogRouter.post('/', async (request, response) => {
       return response
   })
 
+blogRouter.delete('/:id', async (request, response) => {
+    await Blog.findByIdAndRemove(request.params.id)
+    response.status(204).end()
+    return response
+  })
+
+blogRouter.put('/:id', async (request, response) => {
+    // Increase the likes of the blog post by one each time the endpoint is hit
+    const blog = await Blog.findById(request.params.id)
+    blog.likes = blog.likes + 1
+    const result = await blog.save()
+    response.json(result)
+    return response
+  })
+
 module.exports = blogRouter;
