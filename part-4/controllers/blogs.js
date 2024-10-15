@@ -11,6 +11,12 @@ blogRouter.post('/', async (request, response) => {
     if (!request.body.likes) {
       request.body.likes = 0
     }
+
+    if (!request.body.title || !request.body.url) {
+      response.status(400).end()
+      return response
+    }
+
     const blog = new Blog(request.body)
   
     const result = await blog

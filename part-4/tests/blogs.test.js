@@ -64,6 +64,34 @@ describe('testing the endpoint [POST] /api/blogs', () => {
 
         assert(blog.body.likes === 0);
     });
+
+    describe('Try to create a blog with missing title or url', () => {
+        test('missing title', async () => {
+            const newBlog = {
+                author: 'New author',
+                url: 'http://newblog.com',
+            };
+
+            await api
+                .post('/api/blogs')
+                .send(newBlog)
+                .expect(400);
+        });
+
+        test('missing url', async () => {
+            const newBlog = {
+                title: 'New blog post',
+                author: 'New author',
+            };
+
+            await api
+                .post('/api/blogs')
+                .send(newBlog)
+                .expect(400);
+        });
+
+    });
+
 });
         
 
