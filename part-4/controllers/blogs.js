@@ -9,13 +9,22 @@ blogRouter.get('/', async (request, response) => {
 })
 
 blogRouter.post('/', async (request, response) => {
+  const headers = request.headers.authorization;
+  if (!headers) {
+    return response.status(401).json({ error: 'Token missing' });
+  }
+
+  const token = headers.split(' ')[1];
+
+  const users = await User.find({});
+  const user = users.find((user) => user.loginToken === token);
+
   const { title, author, url, likes } = request.body;
 
   if (!title || !url) {
     return response.status(400).json({ error: 'Title or URL missing' });
   }
 
-  const user = await User.findOne({});
   if (!user) {
     return response.status(400).json({ error: 'No users found to assign as creator' });
   }

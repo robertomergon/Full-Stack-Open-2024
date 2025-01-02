@@ -5,15 +5,15 @@ const app = require('../app');
 const db = require('../models')
 const User = require('../models/users');
 const { oneUser } = require('./user_data');
-const bcryptjs = require('bcryptjs');
 
 const api = supertest(app);
 
 beforeEach(async () => {
     await User.deleteMany({});
-    const user = new User(oneUser[0]);
-    user.passwordHash = await bcryptjs.hash("root", 10);
-    await user.save();
+    const user = await api
+        .post('/api/users')
+        .send(oneUser[0])
+        .expect(201);
 });
 
 describe("TEST SUITE FOR USER AUTHENTICATION", () => {
@@ -29,8 +29,7 @@ describe("TEST SUITE FOR USER AUTHENTICATION", () => {
                 .send(user)
                 .expect(200)
                 .expect('Content-Type', /application\/json/);
-
-            assert(response);
+            assert(response.body.token);
         });
 
         test('logging in a user with invalid credentials', async () => {

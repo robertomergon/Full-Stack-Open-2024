@@ -1,5 +1,4 @@
 const authRouter = require('express').Router();
-
 const jwt = require('jsonwebtoken');
 const bcryptjs = require('bcryptjs');
 
@@ -26,6 +25,10 @@ authRouter.post('/login', async (request, response) => {
 
     const token = jwt.sign(userForToken, process.env.SECRET);
 
+    user.loginToken = token;
+    await user.save();
+
+    response.set('Authorization', `Bearer ${token}`);
     response.status(200).send({ token, username: user.username, name: user.name });
 });
 

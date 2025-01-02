@@ -13,6 +13,10 @@ const userSchema = new db.Schema({
     },
     name: String,
     passwordHash: String,
+    loginToken: {
+        type: String,
+        required: false,
+    },
     blogs: [{
         type: db.Schema.Types.ObjectId,
         ref: 'Blog'

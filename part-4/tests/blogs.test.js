@@ -12,12 +12,19 @@ const api = supertest(app);
 
 beforeEach(async () => {
     await User.deleteMany({});
-    const user = new User(oneUser[0]);
-    await user.save();
+    await api
+        .post('/api/users')
+        .send(oneUser[0])
+        .expect(201);
+
+    await api.post('/api/auth/login').send({ username: oneUser[0].username, password: oneUser[0].password }).expect(200);
+    const users = await User.find({});
+
     await Blog.deleteMany({});
     for (const blog of listWithMultipleBlogs) {
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${users[0].loginToken}`)
             .send(blog)
             .expect(201);
     }
@@ -39,17 +46,37 @@ describe('TEST SUITE FOR BLOGS', () => {
     });
 
     describe('testing the endpoint [POST] /api/blogs', () => {
-        test('creating a new blog post', async () => {
+
+        test('creating a new blog post without auth header (No logged)', async () => {
             const newBlog = {
                 title: 'New blog post',
                 author: 'New author',
                 url: 'http://newblog.com',
                 likes: 0,
-                user: oneUser[0].id
             };
 
             await api
                 .post('/api/blogs')
+                .send(newBlog)
+                .expect(401)
+                .expect('Content-Type', /application\/json/);
+
+            const response = await api.get('/api/blogs');
+            assert(response.body.length === listWithMultipleBlogs.length);
+        });
+
+        test('creating a new blog post with auth header (logged)', async () => {
+            const users = await User.find({});
+            const newBlog = {
+                title: 'New blog post',
+                author: 'New author',
+                url: 'http://newblog.com',
+                likes: 0
+            };
+
+            await api
+                .post('/api/blogs')
+                .set('Authorization', `Bearer ${users[0].loginToken}`)
                 .send(newBlog)
                 .expect(201)
                 .expect('Content-Type', /application\/json/);
@@ -59,6 +86,8 @@ describe('TEST SUITE FOR BLOGS', () => {
         });
 
         test('creating a new blog post with missing likes property, it is 0 if it´s missing', async () => {
+            const users = await User.find({});
+
             const newBlog = {
                 title: 'New blog post',
                 author: 'New author',
@@ -67,6 +96,7 @@ describe('TEST SUITE FOR BLOGS', () => {
 
             const blog = await api
                 .post('/api/blogs')
+                .set('Authorization', `Bearer ${users[0].loginToken}`)
                 .send(newBlog)
                 .expect(201)
                 .expect('Content-Type', /application\/json/);
@@ -76,6 +106,7 @@ describe('TEST SUITE FOR BLOGS', () => {
 
         describe('Try to create a blog with missing title or url', () => {
             test('missing title', async () => {
+                const users = await User.find({});
                 const newBlog = {
                     author: 'New author',
                     url: 'http://newblog.com',
@@ -83,11 +114,13 @@ describe('TEST SUITE FOR BLOGS', () => {
 
                 await api
                     .post('/api/blogs')
+                    .set('Authorization', `Bearer ${users[0].loginToken}`)
                     .send(newBlog)
                     .expect(400);
             });
 
             test('missing url', async () => {
+                const users = await User.find({});
                 const newBlog = {
                     title: 'New blog post',
                     author: 'New author',
@@ -95,6 +128,7 @@ describe('TEST SUITE FOR BLOGS', () => {
 
                 await api
                     .post('/api/blogs')
+                    .set('Authorization', `Bearer ${users[0].loginToken}`)
                     .send(newBlog)
                     .expect(400);
             });
@@ -109,7 +143,7 @@ describe('TEST SUITE FOR BLOGS', () => {
                 url: 'http://newblog.com',
             };
 
-            const blog = await api.post('/api/blogs').send(newBlog);
+            const blog = await api.post('/api/blogs').send(newBlog).set('Authorization', `Bearer ${user.loginToken}`).expect(201);
             const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
             assert(blogs[blogs.length - 1].user.id === user.id);
         });

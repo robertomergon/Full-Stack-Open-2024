@@ -12,16 +12,24 @@ const api = supertest(app);
 
 beforeEach(async () => {
     await User.deleteMany({});
-    const user = new User(oneUser[0]);
-    await user.save();
+    await api
+        .post('/api/users')
+        .send(oneUser[0])
+        .expect(201);
+
+    await api.post('/api/auth/login').send({ username: oneUser[0].username, password: oneUser[0].password }).expect(200);
+    const users = await User.find({});
+
     await Blog.deleteMany({});
     for (const blog of listWithMultipleBlogs) {
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${users[0].loginToken}`)
             .send(blog)
             .expect(201);
     }
 });
+
 
 
 describe("TEST SUITE FOR USERS", () => {
