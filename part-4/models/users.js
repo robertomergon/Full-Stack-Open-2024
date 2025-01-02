@@ -1,7 +1,11 @@
 const db = require('./index')
 
 const userSchema = new db.Schema({
-    username: String,
+    username: {
+        minLength: 3,
+        type: String,
+        unique: true,
+    },
     name: String,
     passwordHash: String,
 })
