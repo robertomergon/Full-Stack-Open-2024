@@ -3,15 +3,26 @@ const assert = require('node:assert');
 const supertest = require('supertest');
 const app = require('../app');
 const db = require('../models')
+const Blog = require('../models/blogs');
 const User = require('../models/users');
+const { listWithMultipleBlogs } = require('./blog_data');
+const { oneUser } = require('./user_data');
 
 const api = supertest(app);
 
 beforeEach(async () => {
     await User.deleteMany({});
-    const user = new User({ username: 'root', name: 'Root', passwordHash: 'root' });
+    const user = new User(oneUser[0]);
     await user.save();
+    await Blog.deleteMany({});
+    for (const blog of listWithMultipleBlogs) {
+        await api
+            .post('/api/blogs')
+            .send(blog)
+            .expect(201);
+    }
 });
+
 
 describe("TEST SUITE FOR USERS", () => {
 
@@ -26,6 +37,16 @@ describe("TEST SUITE FOR USERS", () => {
         test('the identifier property of the user is named id', async () => {
             const response = await api.get('/api/users');
             assert(response.body[0].id);
+        });
+
+        test('check that the blogs property is populated', async () => {
+            const response = await api.get('/api/users');
+            assert(response.body[0].blogs[0].id);
+        });
+
+        test('check that the blogs property is populated with the correct number of blogs', async () => {
+            const response = await api.get('/api/users');
+            assert(response.body[0].blogs.length === listWithMultipleBlogs.length);
         });
     });
 

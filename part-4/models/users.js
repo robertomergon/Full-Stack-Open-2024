@@ -1,6 +1,11 @@
 const db = require('./index')
 
 const userSchema = new db.Schema({
+    _id: {
+        type: db.Schema.Types.ObjectId,
+        auto: true,
+        required: false,
+    },
     username: {
         minLength: 3,
         type: String,
@@ -8,6 +13,10 @@ const userSchema = new db.Schema({
     },
     name: String,
     passwordHash: String,
+    blogs: [{
+        type: db.Schema.Types.ObjectId,
+        ref: 'Blog'
+    }]
 })
 
 userSchema.set('toJSON', {

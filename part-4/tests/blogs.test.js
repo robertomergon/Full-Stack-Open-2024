@@ -4,20 +4,26 @@ const supertest = require('supertest');
 const app = require('../app');
 const db = require('../models')
 const Blog = require('../models/blogs');
+const User = require('../models/users');
 const { listWithMultipleBlogs } = require('./blog_data');
+const { oneUser } = require('./user_data');
 
 const api = supertest(app);
 
 beforeEach(async () => {
+    await User.deleteMany({});
+    const user = new User(oneUser[0]);
+    await user.save();
     await Blog.deleteMany({});
-    for (let blog of listWithMultipleBlogs) {
-        let blogObject = new Blog(blog);
-        await blogObject.save();
+    for (const blog of listWithMultipleBlogs) {
+        await api
+            .post('/api/blogs')
+            .send(blog)
+            .expect(201);
     }
 });
 
 describe('TEST SUITE FOR BLOGS', () => {
-
     describe('testing the enpoint [GET] /api/blogs', () => {
         test('blogs are returned as json', async () => {
             await api
@@ -39,6 +45,7 @@ describe('TEST SUITE FOR BLOGS', () => {
                 author: 'New author',
                 url: 'http://newblog.com',
                 likes: 0,
+                user: oneUser[0].id
             };
 
             await api
@@ -92,6 +99,19 @@ describe('TEST SUITE FOR BLOGS', () => {
                     .expect(400);
             });
 
+        });
+
+        test('creating a new blog post checking if the user is assigned to the blog post', async () => {
+            const user = await User.findOne({});
+            const newBlog = {
+                title: 'New blog post',
+                author: 'New author',
+                url: 'http://newblog.com',
+            };
+
+            const blog = await api.post('/api/blogs').send(newBlog);
+            const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
+            assert(blogs[blogs.length - 1].user.id === user.id);
         });
     });
 

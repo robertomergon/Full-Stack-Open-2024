@@ -3,7 +3,7 @@ const User = require('../models/users');
 const bcryptjs = require('bcryptjs');
 
 userRouter.get('/', async (request, response) => {
-    const users = await User.find({});
+    const users = await User.find({}).populate('blogs', { title: 1, author: 1, url: 1, likes: 1 });
     response.json(users);
 });
 
@@ -29,6 +29,11 @@ userRouter.post('/', async (request, response) => {
     } catch (error) {
         response.status(400).json({ error: "Username must be unique" });
     }
+});
+
+userRouter.delete('/:id', async (request, response) => {
+    await User.findByIdAndRemove(request.params.id);
+    response.status(204).end();
 });
 
 module.exports = userRouter;
