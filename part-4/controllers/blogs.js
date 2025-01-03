@@ -1,7 +1,6 @@
 const blogRouter = require('express').Router();
-const tokenExtractor = require('../middleware/token');
+const { tokenExtractor, userExtractor } = require('../middleware/token');
 const Blog = require('../models/blogs');
-const User = require('../models/users');
 
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
@@ -9,11 +8,8 @@ blogRouter.get('/', async (request, response) => {
   return response
 })
 
-blogRouter.post('/', tokenExtractor, async (request, response) => {
-  const token = request.token;
-
-  const users = await User.find({});
-  const user = users.find((user) => user.loginToken === token);
+blogRouter.post('/', [tokenExtractor, userExtractor], async (request, response) => {
+  const user = request.user;
 
   const { title, author, url, likes } = request.body;
 
@@ -40,11 +36,8 @@ blogRouter.post('/', tokenExtractor, async (request, response) => {
   response.status(201).json(savedBlog);
 });
 
-blogRouter.delete('/:id', tokenExtractor, async (request, response) => {
-  const token = request.token;
-
-  const users = await User.find({});
-  const user = users.find((user) => user.loginToken === token);
+blogRouter.delete('/:id', [tokenExtractor, userExtractor], async (request, response) => {
+  const user = request.user;
 
   if (!user) {
     return response.status(401).json({ error: 'Unauthorized user' });
