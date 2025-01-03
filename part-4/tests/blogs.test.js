@@ -6,18 +6,21 @@ const db = require('../models')
 const Blog = require('../models/blogs');
 const User = require('../models/users');
 const { listWithMultipleBlogs } = require('./blog_data');
-const { oneUser } = require('./user_data');
+const { usersList } = require('./user_data');
 
 const api = supertest(app);
 
 beforeEach(async () => {
     await User.deleteMany({});
-    await api
-        .post('/api/users')
-        .send(oneUser[0])
-        .expect(201);
+    for (const user of usersList) {
+        await api
+            .post('/api/users')
+            .send(user)
+            .expect(201);
+    }
 
-    await api.post('/api/auth/login').send({ username: oneUser[0].username, password: oneUser[0].password }).expect(200);
+    await api.post('/api/auth/login').send({ username: usersList[0].username, password: usersList[0].password }).expect(200);
+    await api.post('/api/auth/login').send({ username: usersList[1].username, password: usersList[1].password }).expect(200);
     const users = await User.find({});
 
     await Blog.deleteMany({});
@@ -150,17 +153,47 @@ describe('TEST SUITE FOR BLOGS', () => {
     });
 
     describe('testing the endpoint [DELETE] /api/blogs/:id', () => {
-        test('deleting a blog post', async () => {
+
+        test('deleting a blog post without auth header (No logged)', async () => {
             const blogs = await Blog.find({});
             const blog = blogs[0];
 
             await api
                 .delete(`/api/blogs/${blog.id}`)
+                .expect(401);
+
+            const response = await api.get('/api/blogs');
+            assert(response.body.length === listWithMultipleBlogs.length);
+        });
+
+        test('deleting a blog post with auth header (logged)', async () => {
+            const users = await User.find({});
+            const blogs = await Blog.find({});
+            const blog = blogs[0];
+
+            await api
+                .delete(`/api/blogs/${blog.id}`)
+                .set('Authorization', `Bearer ${users[0].loginToken}`)
                 .expect(204);
 
             const response = await api.get('/api/blogs');
             assert(response.body.length === listWithMultipleBlogs.length - 1);
         });
+
+        test('deleting a blog post with a different user than the owner', async () => {
+            const users = await User.find({});
+            const blogs = await Blog.find({});
+            const blog = blogs[0]; // The owner of this blog post is users[0]
+
+            await api
+                .delete(`/api/blogs/${blog.id}`)
+                .set('Authorization', `Bearer ${users[1].loginToken}`)
+                .expect(401);
+
+            const response = await api.get('/api/blogs');
+            assert(response.body.length === listWithMultipleBlogs.length);
+        });
+
     });
 
     describe('testing the endpoint [PUT] /api/blogs/:id', () => {

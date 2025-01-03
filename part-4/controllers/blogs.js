@@ -40,10 +40,26 @@ blogRouter.post('/', tokenExtractor, async (request, response) => {
   response.status(201).json(savedBlog);
 });
 
-blogRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id)
-  response.status(204).end()
-  return response
+blogRouter.delete('/:id', tokenExtractor, async (request, response) => {
+  const token = request.token;
+
+  const users = await User.find({});
+  const user = users.find((user) => user.loginToken === token);
+
+  if (!user) {
+    return response.status(401).json({ error: 'Unauthorized user' });
+  }
+
+  // Check if the user is the creator of the blog post
+  const blog = await Blog.findById(request.params.id);
+  if (blog.user.toString() !== user._id.toString()) {
+    return response.status(401).json({ error: 'Unauthorized' });
+  }
+
+  user.blogs = user.blogs.filter((blog) => blog.id !== request.params.id);
+  await user.save();
+  await Blog.findByIdAndRemove(request.params.id);
+  response.status(204).end();
 })
 
 blogRouter.put('/:id', async (request, response) => {

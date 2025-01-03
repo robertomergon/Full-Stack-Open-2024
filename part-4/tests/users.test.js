@@ -6,7 +6,7 @@ const db = require('../models')
 const Blog = require('../models/blogs');
 const User = require('../models/users');
 const { listWithMultipleBlogs } = require('./blog_data');
-const { oneUser } = require('./user_data');
+const { usersList } = require('./user_data');
 
 const api = supertest(app);
 
@@ -14,10 +14,10 @@ beforeEach(async () => {
     await User.deleteMany({});
     await api
         .post('/api/users')
-        .send(oneUser[0])
+        .send(usersList[0])
         .expect(201);
 
-    await api.post('/api/auth/login').send({ username: oneUser[0].username, password: oneUser[0].password }).expect(200);
+    await api.post('/api/auth/login').send({ username: usersList[0].username, password: usersList[0].password }).expect(200);
     const users = await User.find({});
 
     await Blog.deleteMany({});

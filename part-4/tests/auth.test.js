@@ -4,7 +4,7 @@ const supertest = require('supertest');
 const app = require('../app');
 const db = require('../models')
 const User = require('../models/users');
-const { oneUser } = require('./user_data');
+const { usersList } = require('./user_data');
 
 const api = supertest(app);
 
@@ -12,7 +12,7 @@ beforeEach(async () => {
     await User.deleteMany({});
     const user = await api
         .post('/api/users')
-        .send(oneUser[0])
+        .send(usersList[0])
         .expect(201);
 });
 
@@ -20,8 +20,8 @@ describe("TEST SUITE FOR USER AUTHENTICATION", () => {
     describe('testing the endpoint [POST] /api/auth/login', () => {
         test('logging in a user', async () => {
             const user = {
-                username: oneUser[0].username,
-                password: oneUser[0].password,
+                username: usersList[0].username,
+                password: usersList[0].password,
             };
 
             const response = await api
