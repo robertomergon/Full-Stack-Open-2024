@@ -1,4 +1,5 @@
 const blogRouter = require('express').Router();
+const tokenExtractor = require('../middleware/token');
 const Blog = require('../models/blogs');
 const User = require('../models/users');
 
@@ -8,13 +9,8 @@ blogRouter.get('/', async (request, response) => {
   return response
 })
 
-blogRouter.post('/', async (request, response) => {
-  const headers = request.headers.authorization;
-  if (!headers) {
-    return response.status(401).json({ error: 'Token missing' });
-  }
-
-  const token = headers.split(' ')[1];
+blogRouter.post('/', tokenExtractor, async (request, response) => {
+  const token = request.token;
 
   const users = await User.find({});
   const user = users.find((user) => user.loginToken === token);
