@@ -18,7 +18,7 @@ const CreateBlogForm = ({ createBlog, setRefetch }) => {
             setAuthor('')
             setUrl('')
         } catch (error) {
-            setMessage({ type: 'error', text: error.response.data.error })
+            setMessage({ type: 'error', text: "Wrong username or password" })
         }
     }
 
