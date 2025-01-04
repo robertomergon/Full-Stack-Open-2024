@@ -101,3 +101,17 @@ describe('[POST] /api/blogs', () => {
         });
     });
 });
+
+describe('[DELETE] /api/blogs/:id', () => {
+    test('a blog post can be deleted', async () => {
+        const blog = await Blog.findOne({});
+
+        await api
+            .delete(`/api/blogs/${blog.id}`)
+            .expect(204);
+
+        const response = await api.get('/api/blogs');
+        expect(response.body).toHaveLength(BlogData.listWithMultipleBlogs.length - 1);
+        expect(response.body).not.toContainEqual(expect.objectContaining(blog));
+    });
+})
