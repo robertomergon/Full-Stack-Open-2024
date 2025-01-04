@@ -8,17 +8,11 @@ blogRouter.get('/', async (request, response) => {
   return response
 })
 
-blogRouter.post('/', [tokenExtractor, userExtractor], async (request, response) => {
-  const user = request.user;
-
+blogRouter.post('/', async (request, response) => {
   const { title, author, url, likes } = request.body;
 
   if (!title || !url) {
     return response.status(400).json({ error: 'Title or URL missing' });
-  }
-
-  if (!user) {
-    return response.status(400).json({ error: 'No users found to assign as creator' });
   }
 
   const blog = new Blog({
@@ -26,12 +20,9 @@ blogRouter.post('/', [tokenExtractor, userExtractor], async (request, response) 
     author,
     url,
     likes: likes || 0,
-    user: user._id,
   });
 
   const savedBlog = await blog.save();
-  user.blogs = user.blogs.concat(savedBlog._id);
-  await user.save();
 
   response.status(201).json(savedBlog);
 });
