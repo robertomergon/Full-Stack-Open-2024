@@ -1,21 +1,31 @@
 import React, { useState } from 'react'
+import MessageBox from './MessageBox'
 
-const CreateBlogForm = ({ createBlog }) => {
+const CreateBlogForm = ({ createBlog, setRefetch }) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
 
+    const [message, setMessage] = useState(null)
+
     const handleCreateBlog = async (event) => {
         event.preventDefault()
-        createBlog({ title, author, url })
-        setTitle('')
-        setAuthor('')
-        setUrl('')
+        try {
+            await createBlog({ title, author, url })
+            setMessage({ type: 'success', text: `A new blog ${title} by ${author} added` })
+            setRefetch(true)
+            setTitle('')
+            setAuthor('')
+            setUrl('')
+        } catch (error) {
+            setMessage({ type: 'error', text: error.response.data.error })
+        }
     }
 
     return (
         <div>
             <h2>Create new</h2>
+            <MessageBox message={message} />
             <form onSubmit={handleCreateBlog}>
                 <div>
                     Title:

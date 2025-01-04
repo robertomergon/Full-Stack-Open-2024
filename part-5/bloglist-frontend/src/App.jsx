@@ -9,12 +9,16 @@ const App = () => {
   const [user, setUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [refetch, setRefetch] = useState(true)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
-  }, [])
+    if (refetch === true) {
+      blogService.getAll().then(blogs => {
+        setBlogs(blogs)
+        setRefetch(false)
+      })
+    }
+  }, [refetch])
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -47,7 +51,7 @@ const App = () => {
       </div> :
       <div>
         <h2>blogs</h2>
-        <CreateBlogForm createBlog={blogService.create} />
+        <CreateBlogForm createBlog={blogService.create} setRefetch={setRefetch} />
         <p>
           Logged in as {user.name} <b>@{user.username}</b> <button onClick={() => {
             setUser(null)
