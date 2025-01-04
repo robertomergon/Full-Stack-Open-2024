@@ -36,7 +36,7 @@ describe('[GET] /api/blogs', () => {
 });
 
 describe('[POST] /api/blogs', () => {
-    test.only('a valid blog can be added', async () => {
+    test('a valid blog can be added', async () => {
         const newBlog = {
             title: 'New blog',
             author: 'New author',
@@ -53,5 +53,23 @@ describe('[POST] /api/blogs', () => {
         const response = await api.get('/api/blogs');
         expect(response.body).toHaveLength(BlogData.listWithMultipleBlogs.length + 1);
         expect(response.body).toContainEqual(expect.objectContaining(newBlog))
+    });
+
+    test.only('if the likes property is missing, it will default to 0', async () => {
+        const newBlog = {
+            title: 'New blog',
+            author: 'New author',
+            url: 'http://newblog.com'
+        };
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/);
+
+        const response = await api.get('/api/blogs');
+        const blog = response.body.find(blog => blog.title === newBlog.title);
+        expect(blog.likes).toBe(0);
     });
 });
