@@ -3,12 +3,15 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import authService from './services/auth'
 import CreateBlogForm from './components/CreateBlogForm'
+import MessageBox from './components/MessageBox'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+
+  const [loginMessage, setLoginMessage] = useState(null)
   const [refetch, setRefetch] = useState(true)
 
   useEffect(() => {
@@ -20,6 +23,12 @@ const App = () => {
     }
   }, [refetch])
 
+  useEffect(() => {
+    setTimeout(() => {
+      setLoginMessage(null)
+    }, 5000)
+  }, [loginMessage])
+
   const handleLogin = async (event) => {
     event.preventDefault()
     authService.login({ username, password })
@@ -30,6 +39,7 @@ const App = () => {
         setPassword('')
       }).catch(error => {
         console.error(error)
+        setLoginMessage({ type: 'error', text: 'Wrong username or password, please try again' })
       })
   }
 
@@ -37,6 +47,7 @@ const App = () => {
     user === null ?
       <div>
         <h2>log in to application</h2>
+        <MessageBox message={loginMessage} />
         <form onSubmit={handleLogin}>
           <div>
             username
