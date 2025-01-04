@@ -20,7 +20,7 @@ const App = () => {
   useEffect(() => {
     if (refetch === true) {
       blogService.getAll().then(blogs => {
-        setBlogs(blogs)
+        setBlogs(blogs.sort((a, b) => b.likes - a.likes))
         setRefetch(false)
       })
     }
@@ -74,13 +74,13 @@ const App = () => {
             localStorage.removeItem('user')
           }}>logout</button>
         </p>
-        <ul>
+        <ol>
           {blogs.map(blog =>
             <li key={blog.id}>
               <Blog key={blog.id} blog={blog} setRefetch={setRefetch} />
             </li>
           )}
-        </ul>
+        </ol>
       </div>
   )
 }
