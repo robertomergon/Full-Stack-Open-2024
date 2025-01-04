@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import MessageBox from './MessageBox'
 
 const CreateBlogForm = ({ createBlog, setRefetch }) => {
@@ -7,6 +7,13 @@ const CreateBlogForm = ({ createBlog, setRefetch }) => {
     const [url, setUrl] = useState('')
 
     const [message, setMessage] = useState(null)
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setMessage(null)
+        }, 5000)
+        return () => clearTimeout(timer)
+    }, [message])
 
     const handleCreateBlog = async (event) => {
         event.preventDefault()
