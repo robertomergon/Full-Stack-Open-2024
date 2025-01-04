@@ -4,10 +4,10 @@ const listHelper = require('../utils/list_helper')
 const { emptyList, listWithOneBlog, listWithMultipleBlogs } = require('./blog_data')
 
 test('dummy returns one', () => {
-  const blogs = []
+    const blogs = []
 
-  const result = listHelper.dummy(blogs)
-  assert.strictEqual(result, 1)
+    const result = listHelper.dummy(blogs)
+    assert.strictEqual(result, 1)
 })
 
 describe('total likes', () => {
@@ -16,12 +16,12 @@ describe('total likes', () => {
         assert.strictEqual(result, 0)
     })
 
-  
 
-  test('when list has only one blog, equals the likes of that', () => {
-    const result = listHelper.totalLikes(listWithOneBlog)
-    assert.strictEqual(result, 5)
-  })
+
+    test('when list has only one blog, equals the likes of that', () => {
+        const result = listHelper.totalLikes(listWithOneBlog)
+        assert.strictEqual(result, 5)
+    })
 
     test('when list has multiple blogs, equals the likes of that', () => {
         const result = listHelper.totalLikes(listWithMultipleBlogs)
