@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import authService from './services/auth'
+import CreateBlogForm from './components/CreateBlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -46,15 +47,20 @@ const App = () => {
       </div> :
       <div>
         <h2>blogs</h2>
+        <CreateBlogForm createBlog={blogService.create} />
         <p>
           Logged in as {user.name} <b>@{user.username}</b> <button onClick={() => {
             setUser(null)
             localStorage.removeItem('user')
           }}>logout</button>
         </p>
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )}
+        <ul>
+          {blogs.map(blog =>
+            <li key={blog.id}>
+              <Blog key={blog.id} blog={blog} />
+            </li>
+          )}
+        </ul>
       </div>
   )
 }
