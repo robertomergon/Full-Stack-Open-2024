@@ -5,7 +5,7 @@ import authService from './services/auth'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -20,6 +20,7 @@ const App = () => {
     authService.login({ username, password })
       .then(user => {
         setUser(user)
+        localStorage.setItem('user', JSON.stringify(user))
         setUsername('')
         setPassword('')
       }).catch(error => {
@@ -46,7 +47,10 @@ const App = () => {
       <div>
         <h2>blogs</h2>
         <p>
-          Logged in as {user.name} <b>@{user.username}</b>
+          Logged in as {user.name} <b>@{user.username}</b> <button onClick={() => {
+            setUser(null)
+            localStorage.removeItem('user')
+          }}>logout</button>
         </p>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
