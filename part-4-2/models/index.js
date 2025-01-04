@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import config from '../utils/config.js';
+const mongoose = require('mongoose');
+const config = require('../utils/config.js');
 
 mongoose.set('strictQuery', true);
 
@@ -17,4 +17,4 @@ const connectToMongoDB = async () => {
 
 connectToMongoDB();
 
-export default mongoose;
+module.exports = mongoose;

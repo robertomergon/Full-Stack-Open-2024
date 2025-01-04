@@ -26,4 +26,9 @@ describe('[GET] /api/blogs', () => {
         const response = await api.get('/api/blogs');
         expect(response.body).toHaveLength(BlogData.listWithMultipleBlogs.length);
     });
+
+    test('check that the identifier is named id instead of _id', async () => {
+        const response = await api.get('/api/blogs');
+        expect(response.body[0].id).toBeDefined();
+    });
 });
