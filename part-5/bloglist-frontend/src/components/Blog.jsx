@@ -28,6 +28,14 @@ const Blog = ({ blog, setRefetch }) => {
           {blog.likes} likes <button onClick={handleLike}>like</button>
           <br />
           added by {blog.user.name}
+          <br />
+          <button onClick={() => {
+            if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+              blogServices.deleteBlog(blog.id).then(() => {
+                setRefetch(true)
+              })
+            }
+          }}>remove</button>
         </div>
       </Togglable>
     </div>

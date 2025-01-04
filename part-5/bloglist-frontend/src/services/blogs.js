@@ -20,4 +20,13 @@ const like = async (id, newObject) => {
   return response.data
 }
 
-export default { getAll, create, like }
+const deleteBlog = async id => {
+  const response = await axios.delete(`${baseUrl}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${JSON.parse(localStorage.getItem('user')).token}`
+    }
+  })
+  return response.data
+}
+
+export default { getAll, create, like, deleteBlog }
