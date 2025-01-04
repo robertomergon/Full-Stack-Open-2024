@@ -77,7 +77,7 @@ const App = () => {
         <ul>
           {blogs.map(blog =>
             <li key={blog.id}>
-              <Blog key={blog.id} blog={blog} />
+              <Blog key={blog.id} blog={blog} setRefetch={setRefetch} />
             </li>
           )}
         </ul>
