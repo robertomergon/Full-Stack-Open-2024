@@ -115,3 +115,20 @@ describe('[DELETE] /api/blogs/:id', () => {
         expect(response.body).not.toContainEqual(expect.objectContaining(blog));
     });
 })
+
+describe('[PUT] /api/blogs/:id', () => {
+    test.only('a blog post likes can be updated', async () => {
+        const blog = await Blog.findOne({});
+
+        await api
+            .put(`/api/blogs/${blog.id}`)
+            .send({
+                likes: blog.likes + 1
+            })
+            .expect(200);
+
+        const response = await api.get('/api/blogs');
+        const blogUpdated = response.body.find(b => b.id === blog.id);
+        expect(blogUpdated.likes).toBe(blog.likes + 1);
+    });
+});
