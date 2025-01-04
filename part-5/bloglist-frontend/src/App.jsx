@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import authService from './services/auth'
 import CreateBlogForm from './components/CreateBlogForm'
 import MessageBox from './components/MessageBox'
+import Togglable from './components/Toggable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -13,6 +14,8 @@ const App = () => {
 
   const [loginMessage, setLoginMessage] = useState(null)
   const [refetch, setRefetch] = useState(true)
+
+  const createBlogRef = useRef()
 
   useEffect(() => {
     if (refetch === true) {
@@ -62,7 +65,9 @@ const App = () => {
       </div> :
       <div>
         <h2>blogs</h2>
-        <CreateBlogForm createBlog={blogService.create} setRefetch={setRefetch} />
+        <Togglable buttonLabel='create new blog' ref={createBlogRef}>
+          <CreateBlogForm createBlog={blogService.create} setRefetch={setRefetch} />
+        </Togglable>
         <p>
           Logged in as {user.name} <b>@{user.username}</b> <button onClick={() => {
             setUser(null)
