@@ -1,13 +1,13 @@
 const MessageBox = ({ message }) => {
-    if (message === null) {
-        return null
-    }
+  if (message === null) {
+    return null
+  }
 
-    return (
-        <div className={message.type}>
-            {message.text}
-        </div>
-    )
+  return (
+    <div className={message.type}>
+      {message.text}
+    </div>
+  )
 }
 
 export default MessageBox

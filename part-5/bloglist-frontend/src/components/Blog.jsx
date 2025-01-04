@@ -1,4 +1,5 @@
-import Togglable from "./Toggable"
+import Togglable from './Toggable'
+
 import { useRef } from 'react'
 import blogServices from '../services/blogs'
 
