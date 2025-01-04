@@ -55,7 +55,7 @@ describe('[POST] /api/blogs', () => {
         expect(response.body).toContainEqual(expect.objectContaining(newBlog))
     });
 
-    test.only('if the likes property is missing, it will default to 0', async () => {
+    test('if the likes property is missing, it will default to 0', async () => {
         const newBlog = {
             title: 'New blog',
             author: 'New author',
@@ -71,5 +71,33 @@ describe('[POST] /api/blogs', () => {
         const response = await api.get('/api/blogs');
         const blog = response.body.find(blog => blog.title === newBlog.title);
         expect(blog.likes).toBe(0);
+    });
+
+    describe('when the title and url properties are missing', () => {
+        test('the server responds with status code 400 wether the title is missing', async () => {
+            const newBlog = {
+                author: 'New author',
+                url: 'http://newblog.com',
+                likes: 0
+            };
+
+            await api
+                .post('/api/blogs')
+                .send(newBlog)
+                .expect(400);
+        });
+
+        test('the server responds with status code 400 wether the url is missing', async () => {
+            const newBlog = {
+                title: 'New blog',
+                author: 'New author',
+                likes: 0
+            };
+
+            await api
+                .post('/api/blogs')
+                .send(newBlog)
+                .expect(400);
+        });
     });
 });
