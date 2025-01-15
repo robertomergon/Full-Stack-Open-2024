@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from '../components/Blog'
 
+describe('<Blog />', () => {
 test('renders content', async () => {
   const blog = {
     title: 'Component testing is done with react-testing-library',
@@ -93,4 +94,6 @@ test('clicking the like button twice calls the event handler twice', async () =>
   await user.click(likeButton)
 
   expect(mockHandler.mock.calls).toHaveLength(2)
+})
+
 })

@@ -33,13 +33,14 @@ const CreateBlogForm = ({ createBlog, setRefetch }) => {
     <div>
       <h2>Create new</h2>
       <MessageBox message={message} />
-      <form onSubmit={handleCreateBlog}>
+      <form className='form' onSubmit={handleCreateBlog}>
         <div>
                     Title:
           <input
             type="text"
             value={title}
             name="Title"
+            placeholder="Title"
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
@@ -49,6 +50,7 @@ const CreateBlogForm = ({ createBlog, setRefetch }) => {
             type="text"
             value={author}
             name="Author"
+            placeholder="Author"
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
@@ -58,10 +60,11 @@ const CreateBlogForm = ({ createBlog, setRefetch }) => {
             type="text"
             value={url}
             name="Url"
+            placeholder="Url"
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>
-        <button type="submit">Create</button>
+        <button className='createButton' type="submit">Create</button>
       </form>
     </div>
   )
