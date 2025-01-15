@@ -28,7 +28,7 @@ test.describe('Blog app', () => {
 
     test.describe('Log in', () => {
 
-        test('user can login', async ({ page }) => {
+        test('succeeds with correct credentials', async ({ page }) => {
             const user = {
                 username: 'root',
                 password: 'root'
@@ -42,7 +42,7 @@ test.describe('Blog app', () => {
             expect(await text.textContent()).toContain('Logged in as ', user.username)
         })
 
-        test('login fails with wrong password', async ({ page }) => {
+        test('fails with wrong password', async ({ page }) => {
             const user = {
                 username: 'root',
                 password: 'wrong'
@@ -55,7 +55,7 @@ test.describe('Blog app', () => {
             await expect(page.getByText('Wrong username or password, please try again')).toBeVisible()
         })
 
-        test('login fails with wrong username', async ({ page }) => {
+        test('fails with wrong username', async ({ page }) => {
             const user = {
                 username: 'wrong',
                 password: 'root'
