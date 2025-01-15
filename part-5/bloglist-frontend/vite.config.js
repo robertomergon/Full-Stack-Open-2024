@@ -7,7 +7,9 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: './testSetup.js'
+    setupFiles: './testSetup.js',
+    testMatch: 'unit-tests/**/*.test.jsx',
+    exclude: ['node_modules', 'tests', 'test-examples'],
   },
   server: {
     proxy: {
