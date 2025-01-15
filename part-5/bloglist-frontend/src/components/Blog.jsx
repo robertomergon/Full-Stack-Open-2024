@@ -3,7 +3,7 @@ import Togglable from './Toggable'
 import { useRef } from 'react'
 import blogServices from '../services/blogs'
 
-const Blog = ({ blog, setRefetch }) => {
+const Blog = ({ blog, setRefetch, handleLike }) => {
   const blogRef = useRef()
   const blogStyle = {
     paddingTop: 10,
@@ -13,12 +13,6 @@ const Blog = ({ blog, setRefetch }) => {
     marginBottom: 5
   }
 
-  function handleLike() {
-    blogServices.like(blog.id, { ...blog, likes: blog.likes + 1 }).then(() => {
-      setRefetch(true)
-    })
-  }
-
   return (
     <div className='blog' style={blogStyle}>
       {blog.title} {blog.author}
@@ -26,7 +20,7 @@ const Blog = ({ blog, setRefetch }) => {
         <div>
           {blog.url}
           <br />
-          {blog.likes} likes <button onClick={handleLike}>like</button>
+          {blog.likes} likes <button className='likeButton' onClick={handleLike}>like</button>
           <br />
           added by {blog.user.name}
           <br />

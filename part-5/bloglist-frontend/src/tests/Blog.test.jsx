@@ -72,4 +72,25 @@ test('after clicking the button, the url and number of likes are displayed', asy
   expect(div).toHaveTextContent(`added by ${blog.user.name}`).toBeVisible()
 })
 
+test('clicking the like button twice calls the event handler twice', async () => {
+  const blog = {
+    title: 'Component testing is done with react-testing-library',
+    author: 'Test Author',
+    url: 'https://test.url',
+    likes: 0,
+    user: {
+      name: 'Test User'
+    }}
 
+  const mockHandler = vi.fn()
+  const user = userEvent.setup()
+  const container = render(<Blog blog={blog} handleLike={mockHandler} />)
+  const button = screen.getByText('view')
+  const likeButton = container.container.querySelector('.likeButton')
+
+  await user.click(button)
+  await user.click(likeButton)
+  await user.click(likeButton)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
+})
