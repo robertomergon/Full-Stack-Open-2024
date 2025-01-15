@@ -20,7 +20,7 @@ const Blog = ({ blog, setRefetch }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       {blog.title} {blog.author}
       <Togglable buttonLabel='view' cancelLabel='hide' ref={blogRef}>
         <div>
