@@ -140,5 +140,40 @@ test.describe('Blog app', () => {
 
             await expect(blogLocator).not.toBeVisible();
         });
+        
+        test('Only the creator of the blog sees the delete button', async ({ page }) => {
+                await page.request.post('http://localhost:3003/api/users', {
+                    data: { 
+                        username: "test",
+                        name: "test",
+                        _id: "6776f8b2749f64a011d65505",
+                        password: "test",
+                    }
+                });
+            
+
+            await page.click('button', { text: 'create new blog' });
+            await page.getByRole('textbox', { name: 'title' }).fill('A blog created by test');
+            await page.getByRole('textbox', { name: 'author' }).fill('test author');
+            await page.getByRole('textbox', { name: 'url' }).fill('http://test.com');
+            await page.getByRole('button', { name: 'Create' }).click();
+
+            const blogLocator = page.locator('.blog', { hasText: 'A blog created by test' });
+            await expect(blogLocator).toBeVisible();
+
+            await page.getByRole('button', { name: 'logout' }).click();
+
+            await page.getByRole('textbox', { name: 'username' }).fill('test');
+            await page.getByRole('textbox', { name: 'password' }).fill('test');
+            await page.click('button');
+
+            await page.waitForSelector('.blog', { text: 'A blog created by test' })
+            await expect(blogLocator).toBeVisible();
+
+            await blogLocator.getByRole('button', { name: 'view' }).click();
+            await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible();
+        })
+    
+
     })
 })
