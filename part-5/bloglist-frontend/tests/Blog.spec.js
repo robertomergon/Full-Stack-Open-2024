@@ -174,6 +174,44 @@ test.describe('Blog app', () => {
             await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible();
         })
     
+        test('Blogs are ordered by likes', async ({ page }) => {
+            // Create one blog with 0 likes
+            await page.click('button', { text: 'create new blog' });
+            await page.getByRole('textbox', { name: 'title' }).fill('A blog created by test');
+            await page.getByRole('textbox', { name: 'author' }).fill('test author');
+            await page.getByRole('textbox', { name: 'url' }).fill('http://test.com');
+            await page.getByRole('button', { name: 'Create' }).click();
 
+            await page.waitForSelector('.blog', { text: 'A blog created by test' });
+
+            // Wait 5 seconds to ensure the blog is created before creating another one
+            await page.waitForTimeout(5000);
+
+            // Create another blog with 1 like
+            await page.getByRole('textbox', { name: 'title' }).fill('Another blog created by test');
+            await page.getByRole('textbox', { name: 'author' }).fill('test author');
+            await page.getByRole('textbox', { name: 'url' }).fill('http://test.com');
+            await page.getByRole('button', { name: 'Create' }).click({ force: true });
+
+            await page.waitForSelector('.blog', { text: 'Another blog created by test' });
+
+            const blogLocator = page.locator('.blog', { hasText: 'Another blog created by test' });
+            await blogLocator.getByRole('button', { name: 'view' }).click();
+            await blogLocator.getByRole('button', { name: 'like' }).click();
+            
+
+            // Check if the second blog is now the first one
+            const firstBlog = await page.locator('.blog').nth(0);
+            await expect(firstBlog).toContainText('Another blog created by test');
+            const firstBlogLikes = await firstBlog.locator('.likeText').textContent()
+
+            // Check if the first blog is now the second one
+            const secondBlog = await page.locator('.blog').nth(1);
+            await expect(secondBlog).toContainText('A blog created by test');
+            await secondBlog.getByRole('button', { name: 'view' }).click();
+            const secondBlogLikes = await secondBlog.locator('.likeText').textContent()
+
+            await expect(Number(firstBlogLikes.split(' ')[0])).toBeGreaterThan(Number(secondBlogLikes.split(' ')[0]));
+        });
     })
 })

@@ -20,7 +20,7 @@ const Blog = ({ blog, setRefetch, handleLike }) => {
         <div>
           {blog.url}
           <br />
-          {blog.likes} likes <button className='likeButton' onClick={handleLike}>like</button>
+          <p className='likeText'>{blog.likes} likes</p> <button className='likeButton' onClick={handleLike}>like</button>
           <br />
           added by {blog.user.name}
           <br />
