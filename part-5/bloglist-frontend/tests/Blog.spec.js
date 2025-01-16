@@ -4,7 +4,7 @@ test.describe('Blog app', () => {
     test.beforeEach(async ({ page }) => {
         await page.request.post('http://localhost:3003/api/testing/reset')
         await page.request.post('http://localhost:3003/api/users', {
-            data: { // In some versions of Playwright, use `data` instead of `json`.
+            data: { 
                 username: "root",
                 name: "root",
                 _id: "6776f8b2749f64a011d65504",
@@ -69,4 +69,31 @@ test.describe('Blog app', () => {
         })
     })
 
+    test.describe('When logged in', () => {
+        test.beforeEach(async ({ page }) => {
+            const user = {
+                username: 'root',
+                password: 'root'
+            }
+            await page.getByRole('textbox', { name: 'username' }).fill(user.username)
+            await page.getByRole('textbox', { name: 'password' }).fill(user.password)
+
+            await page.click('button')
+            await page.waitForSelector('p')
+        })
+
+        test('A blog can be created', async ({ page }) => {
+            await page.click('button', { text: 'create new blog' })
+
+            await page.getByRole('textbox', { name: 'title' }).fill('A blog created by test')
+            await page.getByRole('textbox', { name: 'author' }).fill('test author')
+            await page.getByRole('textbox', { name: 'url' }).fill('http://test.com')
+
+            await page.getByRole('button', { name: 'Create' }).click()
+
+            await page.waitForSelector('.blog', { text: 'A blog created by test' })
+            const blogLocator = await page.locator('.blog', { hasText: 'A blog created by test' })
+            await expect(blogLocator).toBeVisible()
+        })
+    })
 })

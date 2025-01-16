@@ -46,8 +46,8 @@ const App = () => {
       })
   }
 
-  function handleLike() {
-    blogServices.like(blog.id, { ...blog, likes: blog.likes + 1 }).then(() => {
+  function handleLike(blog) {
+    blogService.like(blog.id, { ...blog, likes: blog.likes + 1 }).then(() => {
       setRefetch(true)
     })
   }
@@ -83,7 +83,7 @@ const App = () => {
         <ol>
           {blogs.map(blog =>
             <li key={blog.id}>
-              <Blog key={blog.id} blog={blog} setRefetch={setRefetch} handleLike={handleLike} />
+              <Blog key={blog.id} blog={blog} setRefetch={setRefetch} handleLike={()=> handleLike(blog)} />
             </li>
           )}
         </ol>

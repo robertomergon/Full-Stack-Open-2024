@@ -4,6 +4,7 @@ const config = require('../utils/config');
 
 const mongoUri = config.MONGODB_URI;
 
+
 mongoose.connect(mongoUri, {})
     .then(() => {
         console.log('\nConnected to MongoDB\n');
