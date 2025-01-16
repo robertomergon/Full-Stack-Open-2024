@@ -117,5 +117,28 @@ test.describe('Blog app', () => {
             await expect(page.getByText('1 likes')).toBeVisible()
             
         })
+
+        test('A blog can be deleted', async ({ page }) => {
+            await page.click('button', { text: 'create new blog' });
+            await page.getByRole('textbox', { name: 'title' }).fill('A blog created by test');
+            await page.getByRole('textbox', { name: 'author' }).fill('test author');
+            await page.getByRole('textbox', { name: 'url' }).fill('http://test.com');
+            await page.getByRole('button', { name: 'Create' }).click();
+
+            const blogLocator = page.locator('.blog', { hasText: 'A blog created by test' });
+            await expect(blogLocator).toBeVisible();
+
+            await blogLocator.getByRole('button', { name: 'view' }).click();
+
+            page.on('dialog', async (dialog) => {
+                expect(dialog.type()).toBe('confirm');
+                expect(dialog.message()).toContain('Remove blog A blog created by test by test author');
+                await dialog.accept();
+            });
+
+            await blogLocator.getByRole('button', { name: 'remove' }).click();
+
+            await expect(blogLocator).not.toBeVisible();
+        });
     })
 })
