@@ -20,10 +20,12 @@ const Blog = ({ blog, setRefetch, handleLike }) => {
         <div>
           {blog.url}
           <br />
-          {blog.likes} likes <button className='likeButton' onClick={handleLike}>like</button>
+          <p className='likeText'>{blog.likes} likes</p> <button className='likeButton' onClick={handleLike}>like</button>
           <br />
           added by {blog.user.name}
           <br />
+          {
+          blog.user.username === JSON.parse(localStorage.getItem('user')).username &&
           <button onClick={() => {
             if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
               blogServices.deleteBlog(blog.id).then(() => {
@@ -31,6 +33,7 @@ const Blog = ({ blog, setRefetch, handleLike }) => {
               })
             }
           }}>remove</button>
+        }
         </div>
       </Togglable>
     </div>
